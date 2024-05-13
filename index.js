@@ -1,28 +1,19 @@
-function findSubstring(s, words) {
-  if (s.length === 0 || words.length === 0) return [];
-  const wordMap = new Map();
-  for (const word of words) {
-    wordMap.set(word, (wordMap.get(word) || 0) + 1);
+function uniquePathsWithObstacles(obstacleGrid) {
+  const m = obstacleGrid.length;
+  const n = obstacleGrid[0].length;
+  const dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+  if (obstacleGrid[0][0] === 1) return 0;
+  dp[0][0] = 1;
+  for (let i = 1; i < m; i++) {
+    if (obstacleGrid[i][0] === 0) dp[i][0] = dp[i - 1][0];
   }
-  const wordLength = words[0].length;
-  const totalLength = words.length * wordLength;
-  const result = [];
-  for (let i = 0; i <= s.length - totalLength; i++) {
-    const substring = s.substring(i, i + totalLength);
-    if (isValid(substring, new Map(wordMap))) {
-      result.push(i);
+  for (let j = 1; j < n; j++) {
+    if (obstacleGrid[0][j] === 0) dp[0][j] = dp[0][j - 1];
+  }
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      if (obstacleGrid[i][j] === 0) dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
     }
   }
-  return result;
-  function isValid(substring, wordMap) {
-    const wordCount = new Map();
-    for (let i = 0; i < substring.length; i += wordLength) {
-      const word = substring.substring(i, i + wordLength);
-      wordCount.set(word, (wordCount.get(word) || 0) + 1);
-    }
-    for (const [key, value] of wordMap) {
-      if ((wordCount.get(key) || 0) !== value) return false;
-    }
-    return true;
-  }
+  return dp[m - 1][n - 1];
 }
